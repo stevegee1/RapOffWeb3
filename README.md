@@ -23,6 +23,7 @@ We will also offer additional features such as league administration, digital & 
 1. Hosting the stream live rap battle on Space and Time (A decentralized data warehouse)
 2. We will also offer additional features such as league administration, digital & QR code ticketing, merchandising, ad leads, and more to registered leagues.
 3. NFT integration
+4. Automation and Verifiable Random Generator using Chainlink Oracle
 
 # CURRENT TECH STACK
 1. Solidity
