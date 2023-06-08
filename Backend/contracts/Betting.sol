@@ -4,6 +4,8 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 
+//import "./VotingContract.sol";
+
 //using BIT token as a means of payment
 
 //DEPLOYED ON MANTLE TESTNET
@@ -19,6 +21,7 @@ contract Betting is Ownable {
         uint256 amountBet;
     }
     event bettorsEvent(address indexed bettor, uint256 amount);
+    bool public success;
 
     Bettors[] public bettorsArray;
     mapping(address => uint) public numBetsAddress;
@@ -40,7 +43,9 @@ contract Betting is Ownable {
     }
 
     function betOnRapper(uint256 _rapperIndex, uint256 amount) public payable {
-        require(msg.value >= amount, "insufficient balance");
+        //The amount entered from the frontend will be the msg.value in the write
+        //method, when populating it with the necessary parameters
+        require(msg.value >= amount * 10**18, "insufficient balance");
 
         bettorsArray.push(Bettors({bettor: msg.sender, amountBet: amount}));
         mapBettors[msg.sender] = Bettors({
@@ -54,8 +59,7 @@ contract Betting is Ownable {
         emit bettorsEvent(msg.sender, amount);
     }
 
-//Distribute winnings to stakers
-    function rapperWinFundDistribution(uint _rapperIndex) public onlyOwner {
+    function rapperWinFundDistribution(uint _rapperIndex) internal onlyOwner {
         uint div;
         address payable bettorsAddress;
         uint256 userBet;
@@ -75,11 +79,10 @@ contract Betting is Ownable {
                 div =
                     (userBet * (10000 + ((loserBet * 10000) / winnerBet))) /
                     10000;
-                (bool success, ) = bettorsAddress.call{value: div * 10**18}("");
-                require(success, "transaction reverted");
+                (success, ) = bettorsAddress.call{value: div * 10**18}("");
+                require(success, "transaction reverteds");
             }
-        }
-        if (_rapperIndex == 1) {
+        } else if (_rapperIndex == 1) {
             for (
                 uint256 i = 0;
                 i < rappersArray[_rapperIndex].rapperBettors.length;
@@ -87,18 +90,22 @@ contract Betting is Ownable {
             ) {
                 bettorsAddress = rappersArray[_rapperIndex].rapperBettors[i];
                 userBet = mapBettors[bettorsAddress].amountBet;
-                winnerBet = rappersArray[_rapperIndex].amountBetOn;
+                winnerBet = rappersArray[1].amountBetOn;
                 loserBet = rappersArray[0].amountBetOn;
 
                 div =
                     (userBet * (10000 + ((loserBet * 10000) / winnerBet))) /
                     10000;
-                (bool success, ) = bettorsAddress.call{value: div * 10**18}("");
-                require(success, "transaction reverted");
+                (success, ) = bettorsAddress.call{value: div * 10**18}("");
+                require(success, "transaction revertedss");
             }
         }
 
         rappersArray[0].amountBetOn = 0;
         rappersArray[1].amountBetOn = 0;
+    }
+
+    function rapping(uint _rapperIndex) public view returns (address payable) {
+        return rappersArray[_rapperIndex].rapperBettors[_rapperIndex];
     }
 }

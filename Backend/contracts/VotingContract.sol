@@ -5,22 +5,23 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "hardhat/console.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "./Betting.sol";
 
 //THIS IS THE OFFICIAL VOTING CONTRACT OF RAPOFFWEB3 : Voting
 
 //MANTLE TESTNET
-contract VotingContract is Ownable {
+contract VotingContract is Ownable, Betting {
     //counter logic from openzeppelin
     using Counters for Counters.Counter;
-    Counters.Counter public _voterId;
-    Counters.Counter public _rapperId;
+    Counters.Counter public _voterUniqueId;
+    Counters.Counter public _rapperUniqueId;
 
     //Struct for Rapper
-    struct Rapper {
+    struct RapperStruct {
         string name;
-        uint256 rapperID;
-        string image;
-        string ipfs;
+        uint256 rapperUniqueID;
+       // string image;
+      //  string ipfs;
         address _address;
         uint256 voteCount;
         address[] rapperVotersArray;
@@ -29,47 +30,47 @@ contract VotingContract is Ownable {
     //Struct
     //declare Rapper event
     event rapperEvent(
-        uint256 indexed rapperID,
+        uint256 indexed rapperUniqueID,
         string name,
-        string image,
-        string ipfs,
+       // string image,
+        //string ipfs,
         address _address,
         uint256 voteCount
     );
 
     //create winner struct
-    Rapper public Winner;
+    RapperStruct public Winner;
 
     //create the array of addresses of all rappers
-    address[] public rapperAddresses;
+    address[] public rapperArrayAddresses;
 
     //map the uniqueID of the rapper to its struct
-    mapping(address => Rapper) public rapperMapping;
+    mapping(address => RapperStruct) public rapperAddToStructMapping;
 
     ///////END OF RAPPER DATA/////////
 
-    address[] public voterAddresses; //maybe separate this to different arrays so as to use it for the betting platform
+    address[] public voterArrayAddresses; //maybe separate this to different arrays so as to use it for the betting platform
 
     //map the address of the rapper to its struct
-    mapping(address => Voter) public voterMapping;
+    mapping(address => Voter) public voterAddToStructMapping;
 
     //STRUCT VOTERS
     struct Voter {
         string voter_name;
-        uint256 voterID;
+        uint256 voterUniqueID;
         bool voter_Voted;
         address voter_Address;
-        string voter_Image;
-        string voter_ipfs;
+        //string voter_Image;
+     //   string voter_ipfs;
         address voter_votedFor;
     }
     event VoterEvent(
-        uint256 indexed voterID,
+        uint256 indexed voterUniqueID,
         string voter_name,
         bool voter_Voted,
         address voter_Address,
-        string voter_Image,
-        string voter_ipfs,
+        //string voter_Image,
+       // string voter_ipfs,
         address voter_voteFor
     );
 
@@ -79,39 +80,39 @@ contract VotingContract is Ownable {
     //initialize rapper
     function setRapper(
         address _address,
-        string memory _image,
-        string memory _ipfs,
+        //string memory _image,
+       // string memory _ipfs,
         string memory _name
     ) public onlyOwner {
         //using counter library
         address[] memory addr;
-        _rapperId.increment();
-        uint256 idNumber = _rapperId.current();
+        _rapperUniqueId.increment();
+        uint256 idNumber = _rapperUniqueId.current();
 
         //map rapper address to its struct
         // Rapper storage rapper= rapperMapping[_address];?
 
-        rapperMapping[_address] = Rapper(
+        rapperAddToStructMapping[_address] = RapperStruct(
             _name,
             idNumber,
-            _image,
-            _ipfs,
+           // _image,
+           // _ipfs,
             _address,
             0,
             addr
         );
-        rapperAddresses.push(_address);
-        emit rapperEvent(idNumber, _name, _image, _ipfs, _address, 0);
+        rapperArrayAddresses.push(_address);
+        emit rapperEvent(idNumber, _name,  _address, 0);
     }
 
     //function to return all rapper addresses
     function getRapperAddresses() public view returns (address[] memory) {
-        return rapperAddresses;
+        return rapperArrayAddresses;
     }
 
     //function to return the number of rappers
     function getTheNumberOfRappers() public view returns (uint256) {
-        return rapperAddresses.length;
+        return rapperArrayAddresses.length;
     }
 
     //function to get rapper details
@@ -121,18 +122,18 @@ contract VotingContract is Ownable {
         returns (
             uint256,
             string memory,
-            string memory,
-            string memory,
+           // string memory,
+          //  string memory,
             address,
             uint256
         )
     {
-        Rapper storage rapper = rapperMapping[_rapperID];
+        RapperStruct storage rapper = rapperAddToStructMapping[_rapperID];
         return (
-            rapper.rapperID,
+            rapper.rapperUniqueID,
             rapper.name,
-            rapper.image,
-            rapper.ipfs,
+            //rapper.image,
+          //  rapper.ipfs,
             rapper._address,
             rapper.voteCount
         );
@@ -141,37 +142,37 @@ contract VotingContract is Ownable {
     //making vote function a public, payable function, 3 LINK worth to vote
     function voteNow(
         address _rapperID,
-        string memory _name,
-        string memory _image,
-        string memory _ipfs,
-        uint256 amount
+        string memory _name
+        //string memory _image,
+       // string memory _ipfs,
+       // uint256 amount
     ) public payable {
-        require(amount >= 3 * 10**18, "minimum required LINK token is 3");
+        require(msg.value >= 3 * 10**18, "minimum required LINK token is 3");
 
         require(
-            !voterMapping[msg.sender].voter_Voted,
+            !voterAddToStructMapping[msg.sender].voter_Voted,
             "sorry, you can only vote once"
         );
 
         //increment the vote for the chosen rapperID
-        rapperMapping[_rapperID].voteCount += 1;
-        rapperMapping[_rapperID].rapperVotersArray.push(msg.sender);
+        rapperAddToStructMapping[_rapperID].voteCount += 1;
+        rapperAddToStructMapping[_rapperID].rapperVotersArray.push(msg.sender);
         //increment voter_ID
-        _voterId.increment();
-        uint256 voterIDNumber = _voterId.current();
+        _voterUniqueId.increment();
+        uint256 voterIDNumber = _voterUniqueId.current();
 
         //mapped the voter address to its struct
 
-        voterMapping[msg.sender] = Voter(
+        voterAddToStructMapping[msg.sender] = Voter(
             _name,
             voterIDNumber,
             true,
             msg.sender,
-            _image,
-            _ipfs,
+            //_image,
+           // _ipfs,
             _rapperID
         );
-        voterAddresses.push(msg.sender);
+        voterArrayAddresses.push(msg.sender);
 
         //emit voter event
         emit VoterEvent(
@@ -179,15 +180,15 @@ contract VotingContract is Ownable {
             _name,
             true,
             msg.sender,
-            _image,
-            _ipfs,
+           // _image,
+          //  _ipfs,
             _rapperID
         );
     }
 
     //this returns the number of voters
     function getNumberOfAllVoters() public view returns (uint256) {
-        return voterAddresses.length;
+        return voterArrayAddresses.length;
     }
 
     // 1000000000000000000 = 1 LINK
@@ -199,15 +200,16 @@ contract VotingContract is Ownable {
     ///Determine the winner of the RAP BATTLE
 
     function callWinner() public onlyOwner {
-        for (uint256 i = 0; i < rapperAddresses.length - 1; i++) {
+        for (uint256 i = 0; i < rapperArrayAddresses.length - 1; i++) {
             if (
-                rapperMapping[rapperAddresses[i]].voteCount >=
-                rapperMapping[rapperAddresses[i++]].voteCount
+                rapperAddToStructMapping[rapperArrayAddresses[i]].voteCount >=
+                rapperAddToStructMapping[rapperArrayAddresses[i++]].voteCount
             ) {
-                Winner = rapperMapping[rapperAddresses[i]];
+                Winner = rapperAddToStructMapping[rapperArrayAddresses[i]];
             } else {
-                Winner = rapperMapping[rapperAddresses[i++]];
+                Winner = rapperAddToStructMapping[rapperArrayAddresses[i++]];
             }
         }
+        super.rapperWinFundDistribution(Winner.rapperUniqueID-1);
     }
 }
