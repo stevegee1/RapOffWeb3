@@ -1,0 +1,76 @@
+PODS:
+  - BigInt (5.2.0)
+  - CryptoSwift (1.5.1)
+  - secp256k1.c (0.1.2)
+  - Starscream (4.0.4)
+  - UInt256 (0.2.2)
+  - WalletConnectSwiftV2 (1.6.6):
+    - WalletConnectSwiftV2/WalletConnect (= 1.6.6)
+  - WalletConnectSwiftV2/Commons (1.6.6)
+  - WalletConnectSwiftV2/HTTPClient (1.6.6)
+  - WalletConnectSwiftV2/JSONRPC (1.6.6):
+    - WalletConnectSwiftV2/Commons
+  - WalletConnectSwiftV2/WalletConnect (1.6.6):
+    - WalletConnectSwiftV2/WalletConnectPairing
+    - WalletConnectSwiftV2/WalletConnectVerify
+  - WalletConnectSwiftV2/WalletConnectJWT (1.6.6):
+    - WalletConnectSwiftV2/WalletConnectKMS
+  - WalletConnectSwiftV2/WalletConnectKMS (1.6.6):
+    - WalletConnectSwiftV2/WalletConnectUtils
+  - WalletConnectSwiftV2/WalletConnectNetworking (1.6.6):
+    - WalletConnectSwiftV2/HTTPClient
+    - WalletConnectSwiftV2/WalletConnectRelay
+  - WalletConnectSwiftV2/WalletConnectPairing (1.6.6):
+    - WalletConnectSwiftV2/WalletConnectNetworking
+  - WalletConnectSwiftV2/WalletConnectRelay (1.6.6):
+    - WalletConnectSwiftV2/WalletConnectJWT
+  - WalletConnectSwiftV2/WalletConnectUtils (1.6.6):
+    - WalletConnectSwiftV2/JSONRPC
+  - WalletConnectSwiftV2/WalletConnectVerify (1.6.6):
+    - WalletConnectSwiftV2/WalletConnectNetworking
+    - WalletConnectSwiftV2/WalletConnectUtils
+  - Web3Core (3.1.2):
+    - BigInt (~> 5.2.0)
+    - CryptoSwift (~> 1.5.1)
+    - secp256k1.c (~> 0.1)
+  - web3swift (3.1.2):
+    - Starscream (~> 4.0.4)
+    - Web3Core (~> 3.1.2)
+
+DEPENDENCIES:
+  - UInt256 (from `https://github.com/hyugit/UInt256.git`)
+  - WalletConnectSwiftV2
+  - web3swift
+
+SPEC REPOS:
+  trunk:
+    - BigInt
+    - CryptoSwift
+    - secp256k1.c
+    - Starscream
+    - WalletConnectSwiftV2
+    - Web3Core
+    - web3swift
+
+EXTERNAL SOURCES:
+  UInt256:
+    :git: https://github.com/hyugit/UInt256.git
+
+CHECKOUT OPTIONS:
+  UInt256:
+    :commit: 53950a76fe56f3cb27074dcdb1f534ec28a8483f
+    :git: https://github.com/hyugit/UInt256.git
+
+SPEC CHECKSUMS:
+  BigInt: f668a80089607f521586bbe29513d708491ef2f7
+  CryptoSwift: c4f2debceb38bf44c80659afe009f71e23e4a082
+  secp256k1.c: db47b726585d80f027423682eb369729e61b3b20
+  Starscream: 5178aed56b316f13fa3bc55694e583d35dd414d9
+  UInt256: 2f54dbf4f6fe84aed5a46b76c4c03f65403127eb
+  WalletConnectSwiftV2: d8cf002f96b4b3ca23c2c3019711ecef93f2d2ed
+  Web3Core: 050eb18f0434ac16c42eb7b2270fbce325935128
+  web3swift: 8496f6615c3a1f86e7c9e5fe16c5422ef181527b
+
+PODFILE CHECKSUM: 71317277e8a882c80f5a1132bccc98fb20d4807c
+
+COCOAPODS: 1.12.0
