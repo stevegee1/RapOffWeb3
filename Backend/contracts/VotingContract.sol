@@ -20,8 +20,8 @@ contract VotingContract is Ownable, Betting {
     struct RapperStruct {
         string name;
         uint256 rapperUniqueID;
-       // string image;
-      //  string ipfs;
+        string image;
+        string ipfs;
         address _address;
         uint256 voteCount;
         address[] rapperVotersArray;
@@ -32,8 +32,8 @@ contract VotingContract is Ownable, Betting {
     event rapperEvent(
         uint256 indexed rapperUniqueID,
         string name,
-       // string image,
-        //string ipfs,
+        string image,
+        string ipfs,
         address _address,
         uint256 voteCount
     );
@@ -60,8 +60,8 @@ contract VotingContract is Ownable, Betting {
         uint256 voterUniqueID;
         bool voter_Voted;
         address voter_Address;
-        //string voter_Image;
-     //   string voter_ipfs;
+        string voter_Image;
+        string voter_ipfs;
         address voter_votedFor;
     }
     event VoterEvent(
@@ -69,19 +69,19 @@ contract VotingContract is Ownable, Betting {
         string voter_name,
         bool voter_Voted,
         address voter_Address,
-        //string voter_Image,
-       // string voter_ipfs,
+        string voter_Image,
+        string voter_ipfs,
         address voter_voteFor
     );
 
     //declaring the contract constructor
-    constructor() {}
+    //constructor() {}
 
     //initialize rapper
     function setRapper(
         address _address,
-        //string memory _image,
-       // string memory _ipfs,
+        string memory _image,
+        string memory _ipfs,
         string memory _name
     ) public onlyOwner {
         //using counter library
@@ -89,20 +89,18 @@ contract VotingContract is Ownable, Betting {
         _rapperUniqueId.increment();
         uint256 idNumber = _rapperUniqueId.current();
 
-        //map rapper address to its struct
-        // Rapper storage rapper= rapperMapping[_address];?
-
+       
         rapperAddToStructMapping[_address] = RapperStruct(
             _name,
             idNumber,
-           // _image,
-           // _ipfs,
+            _image,
+            _ipfs,
             _address,
             0,
             addr
         );
         rapperArrayAddresses.push(_address);
-        emit rapperEvent(idNumber, _name,  _address, 0);
+        emit rapperEvent(idNumber, _image, _ipfs, _name, _address, 0);
     }
 
     //function to return all rapper addresses
@@ -122,8 +120,8 @@ contract VotingContract is Ownable, Betting {
         returns (
             uint256,
             string memory,
-           // string memory,
-          //  string memory,
+            string memory,
+            string memory,
             address,
             uint256
         )
@@ -132,22 +130,21 @@ contract VotingContract is Ownable, Betting {
         return (
             rapper.rapperUniqueID,
             rapper.name,
-            //rapper.image,
-          //  rapper.ipfs,
+            rapper.image,
+            rapper.ipfs,
             rapper._address,
             rapper.voteCount
         );
     }
 
-    //making vote function a public, payable function, 3 LINK worth to vote
+    //making vote function a public, payable function, 3BIT worth to vote
     function voteNow(
         address _rapperID,
-        string memory _name
-        //string memory _image,
-       // string memory _ipfs,
-       // uint256 amount
+        string memory _name,
+        string memory _image,
+        string memory _ipfs
     ) public payable {
-        require(msg.value >= 3 * 10**18, "minimum required LINK token is 3");
+        require(msg.value >= 3 * 10**18, "minimum required BIT token is 3");
 
         require(
             !voterAddToStructMapping[msg.sender].voter_Voted,
@@ -168,8 +165,8 @@ contract VotingContract is Ownable, Betting {
             voterIDNumber,
             true,
             msg.sender,
-            //_image,
-           // _ipfs,
+            _image,
+            _ipfs,
             _rapperID
         );
         voterArrayAddresses.push(msg.sender);
@@ -180,8 +177,8 @@ contract VotingContract is Ownable, Betting {
             _name,
             true,
             msg.sender,
-           // _image,
-          //  _ipfs,
+            _image,
+            _ipfs,
             _rapperID
         );
     }
@@ -189,11 +186,6 @@ contract VotingContract is Ownable, Betting {
     //this returns the number of voters
     function getNumberOfAllVoters() public view returns (uint256) {
         return voterArrayAddresses.length;
-    }
-
-    // 1000000000000000000 = 1 LINK
-    function withdraw(uint256 amount, address to) external onlyOwner {
-        //LINKTOKEN.transfer(to, amount);
     }
 
     //CAN I AUTOMATE THIS METHOD USING CHAINLINK TO DETERMINE THE WINNER???
@@ -210,6 +202,6 @@ contract VotingContract is Ownable, Betting {
                 Winner = rapperAddToStructMapping[rapperArrayAddresses[i++]];
             }
         }
-        super.rapperWinFundDistribution(Winner.rapperUniqueID-1);
+        super.rapperWinFundDistribution(Winner.rapperUniqueID - 1);
     }
 }
